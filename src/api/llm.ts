@@ -70,7 +70,11 @@ Do not include markdown code blocks or any other text outside the JSON.
 		// ensure week numbers match
 		parsed.weekNumber = weekNumber;
 		return parsed;
-	} catch (_err) {
-		throw new Error(`Failed to parse LLM response as JSON: ${content}`);
+	} catch (err) {
+		const msg = err instanceof Error ? err.message : String(err);
+		throw new Error(
+			`Failed to parse LLM response as JSON: ${content} - Error: ${msg}`,
+			{ cause: err },
+		);
 	}
 };

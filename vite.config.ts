@@ -14,7 +14,9 @@ const fileStoragePlugin = (): Plugin => ({
 			// Ensure dir exists
 			try {
 				await fs.mkdir(dataDir, { recursive: true });
-			} catch (err) {}
+			} catch {
+				// directory already exists
+			}
 
 			res.setHeader("Content-Type", "application/json");
 
@@ -25,7 +27,7 @@ const fileStoragePlugin = (): Plugin => ({
 						try {
 							const data = await fs.readFile(file, "utf-8");
 							res.end(data);
-						} catch (e) {
+						} catch {
 							res.statusCode = 404;
 							res.end(JSON.stringify({ error: "Not found" }));
 						}
@@ -35,7 +37,7 @@ const fileStoragePlugin = (): Plugin => ({
 						try {
 							const data = await fs.readFile(file, "utf-8");
 							res.end(data);
-						} catch (e) {
+						} catch {
 							res.statusCode = 404;
 							res.end(JSON.stringify({ error: "Not found" }));
 						}
@@ -66,9 +68,10 @@ const fileStoragePlugin = (): Plugin => ({
 						}
 					});
 				}
-			} catch (e: any) {
+			} catch (e) {
+				const error = e as Error;
 				res.statusCode = 500;
-				res.end(JSON.stringify({ error: e.message }));
+				res.end(JSON.stringify({ error: error.message }));
 			}
 		});
 	},
