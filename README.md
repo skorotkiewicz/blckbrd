@@ -2,6 +2,11 @@
 
 A minimalistic, elegant, and local-first family meal planner.
 
+<p align="center">
+  <img src="docs/main.png" width="48%" />
+  <img src="docs/week.png" width="48%" /> 
+</p>
+
 Blackboard brings the classic kitchen chalkboard to your browser. Tell it about your family's preferences and dietary restrictions, and it will use your preferred LLM to generate a customized 7-day meal plan—complete with full recipes.
 
 ## Features
@@ -16,7 +21,7 @@ Blackboard brings the classic kitchen chalkboard to your browser. Tell it about 
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) (or Node.js with npm/yarn/pnpm)
+- [Bun](https://bun.sh/) (or Node.js with npm/yarn/pnpm)s
 
 ### Environment Variables
 
