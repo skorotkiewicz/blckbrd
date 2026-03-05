@@ -1,4 +1,3 @@
-import React from "react";
 import { Blackboard } from "./components/Blackboard";
 import { Onboarding } from "./components/Onboarding";
 import { useMealPlan } from "./hooks/useMealPlan";
