@@ -1,73 +1,43 @@
-# React + TypeScript + Vite
+# Blackboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A minimalistic, elegant, and local-first family meal planner.
 
-Currently, two official plugins are available:
+Blackboard brings the classic kitchen chalkboard to your browser. Tell it about your family's preferences and dietary restrictions, and it will use your preferred LLM to generate a customized 7-day meal plan—complete with full recipes.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **Chalkboard Aesthetic**: A highly realistic and interactive UI, built with pure CSS.
+- **AI-Powered Planning**: Automatically curates a weekly meal plan tailored precisely to your family's tastes and allergies.
+- **Local File System Storage**: Leverages a custom Vite plugin to store your family profile and meal plans securely on your local disk (`src/data/`).
+- **Recipe Cards**: Click on any weekly meal to instantly bring up the full cooking instructions.
+- **Week-Aware**: Automatically tracks the current ISO week number to keep you organized.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- [Bun](https://bun.sh/) (or Node.js with npm/yarn/pnpm)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+### Environment Variables
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Create a `.env` file in the root directory of the project with your LLM configuration:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```env
+VITE_BASE_URL=http://192.168.0.124:8888/v1
+VITE_MODEL=qwen2.5:7b
+VITE_API_KEY=your_dummy_or_real_api_key
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+1. Install dependencies:
+```bash
+bun install
 ```
+
+2. Start the development server:
+```bash
+bun dev
+```
+
+Your app will run locally. The first time you launch Blackboard, you'll be prompted to enter a brief description of your household and dietary needs to calibrate the menu generation. Enjoy!
