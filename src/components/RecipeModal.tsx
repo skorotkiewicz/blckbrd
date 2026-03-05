@@ -17,7 +17,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({ meal, onClose }) => {
 				left: 0,
 				right: 0,
 				bottom: 0,
-				backgroundColor: "rgba(0,0,0,0.7)",
+				backgroundColor: "rgba(0,0,0,1)",
 				display: "flex",
 				justifyContent: "center",
 				alignItems: "center",
@@ -37,6 +37,7 @@ export const RecipeModal: React.FC<RecipeModalProps> = ({ meal, onClose }) => {
 			>
 				<div className="content-layer">
 					<button
+						type="button"
 						onClick={onClose}
 						style={{
 							position: "absolute",

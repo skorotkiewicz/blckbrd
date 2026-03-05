@@ -3,11 +3,15 @@ import { useState } from "react";
 import type { FamilyProfile } from "../types";
 
 interface OnboardingProps {
+	initialDescription?: string;
 	onSave: (profile: FamilyProfile) => void;
 }
 
-export const Onboarding: React.FC<OnboardingProps> = ({ onSave }) => {
-	const [description, setDescription] = useState("");
+export const Onboarding: React.FC<OnboardingProps> = ({
+	initialDescription = "",
+	onSave,
+}) => {
+	const [description, setDescription] = useState(initialDescription);
 
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
@@ -46,11 +50,10 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onSave }) => {
 						placeholder="e.g., My daughter doesn't like mushrooms, I (father) eat everything, mother of my daughter has allergies to nuts..."
 						value={description}
 						onChange={(e) => setDescription(e.target.value)}
-						autoFocus
 					/>
 					<div style={{ marginTop: "auto", textAlign: "center" }}>
 						<button type="submit" disabled={!description.trim()}>
-							Start Planning!
+							{initialDescription ? "Save Changes" : "Start Planning!"}
 						</button>
 					</div>
 				</form>

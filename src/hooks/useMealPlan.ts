@@ -3,87 +3,114 @@ import { generateMealPlan } from "../api/llm";
 import type { FamilyProfile, WeeklyPlan } from "../types";
 import { getCurrentWeek } from "../utils/date";
 
-const PROFILE_KEY = "blckbrd_family_profile";
-const PLAN_PREFIX = "blckbrd_plan_week_";
-
 export const useMealPlan = () => {
 	const [profile, setProfile] = useState<FamilyProfile | null>(null);
 	const [currentPlan, setCurrentPlan] = useState<WeeklyPlan | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [isEditingProfile, setIsEditingProfile] = useState(false);
+	const [hasLoadedProfile, setHasLoadedProfile] = useState(false);
+
 	const currentWeek = getCurrentWeek();
 
 	// Load profile on mount
 	useEffect(() => {
-		const savedProfile = localStorage.getItem(PROFILE_KEY);
-		if (savedProfile) {
+		const loadProfile = async () => {
 			try {
-				setProfile(JSON.parse(savedProfile));
+				const res = await fetch("/api/profile");
+				if (res.ok) {
+					const data = await res.json();
+					if (data?.description) {
+						setProfile(data);
+					} else {
+						setIsEditingProfile(true);
+					}
+				} else {
+					setIsEditingProfile(true);
+				}
 			} catch (e) {
-				console.error("Failed to parse profile", e);
+				console.error("Failed to load profile", e);
+				setIsEditingProfile(true);
+			} finally {
+				setHasLoadedProfile(true);
 			}
-		}
+		};
+		loadProfile();
 	}, []);
 
 	// When profile is available, load or generate plan
 	useEffect(() => {
-		if (!profile) return;
+		if (!profile || isEditingProfile) return;
 
 		const loadPlan = async () => {
-			const planKey = `${PLAN_PREFIX}${currentWeek}`;
-			const savedPlan = localStorage.getItem(planKey);
-
-			if (savedPlan) {
-				try {
-					setCurrentPlan(JSON.parse(savedPlan));
-					return;
-				} catch (e) {
-					console.error("Failed to parse saved plan", e);
-				}
-			}
-
-			// Generate new plan
 			setIsLoading(true);
 			setError(null);
 			try {
+				const res = await fetch(`/api/plan/${currentWeek}`);
+				if (res.ok) {
+					const savedPlan = await res.json();
+					if (savedPlan?.meals && savedPlan.meals.length > 0) {
+						setCurrentPlan(savedPlan);
+						setIsLoading(false);
+						return;
+					}
+				}
+
+				// Generate new plan if not found
 				const newPlan = await generateMealPlan(profile, currentWeek);
-				localStorage.setItem(planKey, JSON.stringify(newPlan));
+
+				// Save it to API
+				await fetch(`/api/plan/${currentWeek}`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify(newPlan),
+				});
+
 				setCurrentPlan(newPlan);
-			} catch (err: any) {
-				setError(err.message || "Failed to generate meal plan");
+			} catch (err: unknown) {
+				const msg = err instanceof Error ? err.message : String(err);
+				setError(msg || "Failed to generate meal plan");
 			} finally {
 				setIsLoading(false);
 			}
 		};
 
 		loadPlan();
-	}, [profile, currentWeek]);
+	}, [profile, currentWeek, isEditingProfile]);
 
-	const saveProfile = (newProfile: FamilyProfile) => {
-		localStorage.setItem(PROFILE_KEY, JSON.stringify(newProfile));
-		setProfile(newProfile);
-		// Setting profile will trigger the useEffect to generate/load plan
+	const saveProfile = async (newProfile: FamilyProfile) => {
+		try {
+			await fetch("/api/profile", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(newProfile),
+			});
+			setProfile(newProfile);
+			setIsEditingProfile(false);
+		} catch (e) {
+			console.error("Failed to save profile", e);
+		}
 	};
 
-	const clearProfile = () => {
-		localStorage.removeItem(PROFILE_KEY);
-		setProfile(null);
-		setCurrentPlan(null);
+	const editProfile = () => {
+		setIsEditingProfile(true);
 	};
 
 	const regeneratePlan = async () => {
 		if (!profile) return;
-		const planKey = `${PLAN_PREFIX}${currentWeek}`;
-		localStorage.removeItem(planKey);
-		setCurrentPlan(null);
 		setIsLoading(true);
 		setError(null);
 		try {
 			const newPlan = await generateMealPlan(profile, currentWeek);
-			localStorage.setItem(planKey, JSON.stringify(newPlan));
+			await fetch(`/api/plan/${currentWeek}`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(newPlan),
+			});
 			setCurrentPlan(newPlan);
-		} catch (err: any) {
-			setError(err.message || "Failed to generate meal plan");
+		} catch (err: unknown) {
+			const msg = err instanceof Error ? err.message : String(err);
+			setError(msg || "Failed to generate meal plan");
 		} finally {
 			setIsLoading(false);
 		}
@@ -95,8 +122,10 @@ export const useMealPlan = () => {
 		currentWeek,
 		isLoading,
 		error,
+		isEditingProfile,
+		hasLoadedProfile,
 		saveProfile,
-		clearProfile,
+		editProfile,
 		regeneratePlan,
 	};
 };

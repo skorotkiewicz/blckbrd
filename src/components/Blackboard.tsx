@@ -31,6 +31,7 @@ export const Blackboard: React.FC<BlackboardProps> = ({
 					}}
 				>
 					<button
+						type="button"
 						onClick={onResetProfile}
 						style={{ fontSize: "0.8rem", padding: "0.4rem 0.8rem" }}
 					>
@@ -38,6 +39,7 @@ export const Blackboard: React.FC<BlackboardProps> = ({
 					</button>
 					<h1 style={{ margin: 0 }}>Week {currentWeek} Menu</h1>
 					<button
+						type="button"
 						onClick={onRegenerate}
 						disabled={isLoading}
 						style={{ fontSize: "0.8rem", padding: "0.4rem 0.8rem" }}

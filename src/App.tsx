@@ -9,13 +9,38 @@ function App() {
 		currentWeek,
 		isLoading,
 		error,
+		isEditingProfile,
+		hasLoadedProfile,
 		saveProfile,
-		clearProfile,
+		editProfile,
 		regeneratePlan,
 	} = useMealPlan();
 
-	if (!profile) {
-		return <Onboarding onSave={saveProfile} />;
+	if (!hasLoadedProfile) {
+		return (
+			<div
+				style={{
+					padding: "1rem",
+					minHeight: "100vh",
+					display: "flex",
+					justifyContent: "center",
+					alignItems: "center",
+				}}
+			>
+				<div className="loader" style={{ color: "white" }}>
+					Loading Blackboard...
+				</div>
+			</div>
+		);
+	}
+
+	if (!profile || isEditingProfile) {
+		return (
+			<Onboarding
+				onSave={saveProfile}
+				initialDescription={profile?.description || ""}
+			/>
+		);
 	}
 
 	return (
@@ -46,7 +71,7 @@ function App() {
 					currentWeek={currentWeek}
 					onRegenerate={regeneratePlan}
 					isLoading={isLoading}
-					onResetProfile={clearProfile}
+					onResetProfile={editProfile}
 				/>
 			) : null}
 		</div>
