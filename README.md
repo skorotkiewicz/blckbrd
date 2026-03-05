@@ -24,7 +24,7 @@ Create a `.env` file in the root directory of the project with your LLM configur
 
 ```env
 VITE_BASE_URL=http://192.168.0.124:8888/v1
-VITE_MODEL=qwen2.5:7b
+VITE_MODEL=qwen3.5:9b
 VITE_API_KEY=your_dummy_or_real_api_key
 ```
 
